@@ -29,7 +29,7 @@ class FCLayer():
 		############################################################################
 	    # TODO: Put your code here
 		# Apply linear transformation(Wx+b) to Input, and return results.
-
+    return self.W @ Input + self.b
 
 	    ############################################################################
 
@@ -39,7 +39,8 @@ class FCLayer():
 		############################################################################
 	    # TODO: Put your code here
 		# Calculate the gradient using the later layer's gradient: delta
-
+    self.grad_W = Input.T @ delta
+    self.grad_b = np.sum(delta, axis = 0)
 
 	    ############################################################################
 

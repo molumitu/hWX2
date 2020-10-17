@@ -19,8 +19,14 @@ class EuclideanLossLayer():
 		# Calculate the average accuracy and loss over the minibatch, and
 		# store in self.accu and self.loss respectively.
 		# Only return the self.loss, self.accu will be used in solver.py.
+    batch_size = np.array(gt).reshape(-1)
+    gt_onehot = np.eye(10)[targets]
 
 
+    num_total = np.shape(logit)[0]
+    num_accu = (batch_size*10 - np.sum(gt_onehot == logit))/2
+    self.accu = num_acc/batch_size
+    self.loss = 0.5 * np.sum(np.square(gt_onehot - logit))
 	    ############################################################################
 
 		return self.loss
