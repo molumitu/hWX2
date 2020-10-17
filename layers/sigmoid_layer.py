@@ -14,7 +14,7 @@ class SigmoidLayer():
 		############################################################################
 	    # TODO: Put your code here
 		# Apply Sigmoid activation function to Input, and return results.
-
+    return 1/(1 + np.exp(Input))
 
 	    ############################################################################
 
