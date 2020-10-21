@@ -10,6 +10,8 @@ class SoftmaxCrossEntropyLossLayer():
         self.acc = 0.
         self.loss = np.zeros(1, dtype='f')
         self.batch_size = None
+        self.gt_onehot = None
+        self.logit_softmax = None
        
 
     def forward(self, logit, gt):
@@ -26,17 +28,25 @@ class SoftmaxCrossEntropyLossLayer():
         # Only return the self.loss, self.accu will be used in solver.py.
         # targets = np.array(gt).reshape(-1)
         # gt_onehot = np.eye(10)[targets]
-        logit_index = np.argmax(logit, axis=1)
-        targets = logit_index.reshape(-1)
-        logit_onehot = np.eye(10)[targets]
+        self.batch_size = np.shape(logit)[0]
+        
+        temp1 = np.exp(logit)
+        logit_softmax = temp1 / np.sum(temp1, axis=1)[:, None]
 
-        self.logit_onehot = logit_onehot
+        logit_softmax_index = np.argmax(logit_softmax, axis=1)
+        targets = logit_softmax_index.reshape(-1)
+        logit_softmax_onehot = np.eye(10)[targets]
+        
+        
+        #loss = -np.sum(label * np.log(f_result))/batch_size 
+
+        self.logit_softmax = logit_softmax
         self.gt_onehot = gt
 
-        self.batch_size = np.shape(logit)[0]
-        num_error = (self.batch_size*10 - np.sum(gt_onehot == logit))/2
+
+        num_error = (self.batch_size*10 - np.sum(self.gt_onehot == logit_softmax_onehot))/2
         self.acc = 1 - num_error/self.batch_size
-        self.loss = -np.sum(logit * np.log(gt_onehot))/self.batch_size
+        self.loss = -np.sum(self.gt_onehot * np.log(self.logit_softmax))/self.batch_size
         ############################################################################
 
         return self.loss
@@ -47,6 +57,6 @@ class SoftmaxCrossEntropyLossLayer():
         ############################################################################
         # TODO: Put your code here
         # Calculate and return the gradient (have the same shape as logit)
-        return (self.logit_onehot - gt_onehot) / self.batch_size
+        return (self.logit_softmax - self.gt_onehot)/self.batch_size
 
         ############################################################################
