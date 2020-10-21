@@ -8,13 +8,15 @@ class ReLULayer():
         Applies the rectified linear unit function element-wise: relu(x) = max(x, 0)
         """
         self.trainable = False # no parameters
+        self.Input = None
 
     def forward(self, Input):
 
         ############################################################################
         # TODO: Put your code here
         # Apply ReLU activation function to Input, and return results.
-        return np.max(0, Input)
+        self.Input = Input
+        return np.max([0, Input])
 
         ############################################################################
 
@@ -24,6 +26,6 @@ class ReLULayer():
         ############################################################################
         # TODO: Put your code here
         # Calculate the gradient using the later layer's gradient: delta
-        return delta * (input > 0)
+        return delta * (self.Input > 0)
 
         ############################################################################

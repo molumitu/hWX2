@@ -6,8 +6,10 @@ class EuclideanLossLayer():
     def __init__(self):
         self.acc = 0.
         self.loss = 0.
-        self.logit = None
-        self.logit = None
+        self.logit_onehot = None
+        self.gt_onehot = None
+        self.batch_size = 0
+
 
     def forward(self, logit, gt):
         """
@@ -21,16 +23,23 @@ class EuclideanLossLayer():
         # Calculate the average accuracy and loss over the minibatch, and
         # store in self.accu and self.loss respectively.
         # Only return the self.loss, self.accu will be used in solver.py.
-        # batch_size = np.array(gt).reshape(-1)
+        # targets = np.array(gt).reshape(-1)
         # gt_onehot = np.eye(10)[targets]
+        logit_index = np.argmax(logit, axis=1)
+        targets = logit_index.reshape(-1)
+        logit_onehot = np.eye(10)[targets]
 
-        self.logit = logit
-        self.gt = gt
-        batch_size = np.shape(logit)[0]
-        num_acc = (batch_size*10 - np.sum(gt == logit))/2
-        self.acc = num_acc/batch_size
+        self.logit_onehot = logit_onehot
+        self.gt_onehot = gt
+
+        self.batch_size = np.shape(logit)[0]
+        num_error = (self.batch_size*10 - np.sum(self.logit_onehot == self.gt_onehot))/2
+        #print(gt)
+        #print(logit)
+        #print(num_acc)
+        self.acc = 1 - num_error/self.batch_size
         #self.loss = 0.5 * np.sum(np.square(gt - logit))
-        self.loss = ((logit - gt) ** 2).mean(axis=0).sum() / 2
+        self.loss = ((self.logit_onehot - self.gt_onehot) ** 2).mean(axis=0).sum() / 2
         ############################################################################
 
         return self.loss
@@ -40,6 +49,6 @@ class EuclideanLossLayer():
         ############################################################################
         # TODO: Put your code here
         # Calculate and return the gradient (have the same shape as logit)
-        return self.logit - self.gt
+        return (self.logit_onehot - self.gt_onehot)/self.batch_size
 
         ############################################################################
