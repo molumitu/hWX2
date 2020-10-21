@@ -1,7 +1,7 @@
 """ Solver for Training and Testing """
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 TRAIN_NUM = 55000 # Training
 VAL_NUM = 5000 # Validation
