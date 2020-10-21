@@ -16,7 +16,7 @@ class ReLULayer():
         # TODO: Put your code here
         # Apply ReLU activation function to Input, and return results.
         self.Input = Input
-        return np.max([0, Input])
+        return np.maximum(0, Input)
 
         ############################################################################
 
@@ -26,6 +26,10 @@ class ReLULayer():
         ############################################################################
         # TODO: Put your code here
         # Calculate the gradient using the later layer's gradient: delta
-        return delta * (self.Input > 0)
+        delta[self.Input <= 0] = 0
+        return delta
+        #return delta * (self.Input >= 0)
+
+
 
         ############################################################################
