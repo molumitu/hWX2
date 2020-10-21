@@ -9,6 +9,7 @@ class SoftmaxCrossEntropyLossLayer():
     def __init__(self):
         self.acc = 0.
         self.loss = np.zeros(1, dtype='f')
+        self.batch_size = None
        
 
     def forward(self, logit, gt):
@@ -23,13 +24,19 @@ class SoftmaxCrossEntropyLossLayer():
         # Calculate the average accuracy and loss over the minibatch, and
         # store in self.accu and self.loss respectively.
         # Only return the self.loss, self.accu will be used in solver.py.
-        targets = np.array(gt).reshape(-1)
-        gt_onehot = np.eye(10)[targets]
+        # targets = np.array(gt).reshape(-1)
+        # gt_onehot = np.eye(10)[targets]
+        logit_index = np.argmax(logit, axis=1)
+        targets = logit_index.reshape(-1)
+        logit_onehot = np.eye(10)[targets]
 
-        batch_size = np.shape(logit)[0]
-        num_accu = (batch_size*10 - np.sum(gt_onehot == logit))/2
-        self.accu = num_acc/batch_size
-        self.loss = -np.sum(logit * np.log(gt_onehot))/num_total
+        self.logit_onehot = logit_onehot
+        self.gt_onehot = gt
+
+        self.batch_size = np.shape(logit)[0]
+        num_error = (self.batch_size*10 - np.sum(gt_onehot == logit))/2
+        self.acc = 1 - num_error/self.batch_size
+        self.loss = -np.sum(logit * np.log(gt_onehot))/self.batch_size
         ############################################################################
 
         return self.loss
@@ -40,6 +47,6 @@ class SoftmaxCrossEntropyLossLayer():
         ############################################################################
         # TODO: Put your code here
         # Calculate and return the gradient (have the same shape as logit)
-        return (gt - logit) 
+        return (self.logit_onehot - gt_onehot) / self.batch_size
 
         ############################################################################

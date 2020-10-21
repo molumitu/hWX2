@@ -26,7 +26,7 @@ class ReLULayer():
         ############################################################################
         # TODO: Put your code here
         # Calculate the gradient using the later layer's gradient: delta
-        delta[self.Input <= 0] = 0
+        delta[self.Input >= 0] = 0
         return delta
         #return delta * (self.Input >= 0)
 
